@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<!-- ROS 2 包描述文件：声明包名、版本、维护者以及运行依赖。 -->
+<package format="3">
+  <!-- 包的唯一名称，与 CMakeLists.txt 中的 project() 保持一致。 -->
+  <name>wheeltec_online_navigation</name>
+  <version>1.0.0</version>
+  <!-- 简要说明本包的功能：在线 SLAM 与 Nav2 导航集成。 -->
+  <description>Online async slam_toolbox and Nav2 navigation integration for Wheeltec robots.</description>
+  <!-- 维护者信息。 -->
+  <maintainer email="wheeltec@todo.todo">wheeltec</maintainer>
+  <license>Apache-2.0</license>
+
+  <!-- 构建该包所需的工具依赖。 -->
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <!-- 异步在线建图节点及其参数由 slam_toolbox 提供。 -->
+  <exec_depend>slam_toolbox</exec_depend>
+  <!-- 复用 Nav2 标准导航启动文件、生命周期管理和代价地图。 -->
+  <exec_depend>nav2_bringup</exec_depend>
+  <!-- 巡线路点循环节点，启动文件中会单独拉起。 -->
+  <exec_depend>nav2_waypoint_cycle</exec_depend>
+  <!-- 启动底盘、IMU、里程计与机器人状态发布器。 -->
+  <exec_depend>turn_on_wheeltec_robot</exec_depend>
+  <!-- Wheeltec 的 Nav2 参数、地图与 RViz 配置。 -->
+  <exec_depend>wheeltec_nav2</exec_depend>
+  <!-- 可选启动的可视化工具。 -->
+  <exec_depend>rviz2</exec_depend>
+
+  <!-- 指定该包使用 ament_cmake 构建类型。 -->
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

@@ -115,25 +115,18 @@ controller_server:
       yaw_goal_tolerance: 0.15 #yaw目标容差
     # DWB parameters
     FollowPath: 
-      plugin: "nav2_rotation_shim_controller::RotationShimController" #旋转控制器
-      primary_controller: "nav2_mppi_controller::MPPIController" #MPPI控制器
-      angular_dist_threshold: 0.5
-      forward_sampling_distance: 0.4
-      rotate_to_heading_angular_vel: 1.0
-      max_angular_accel: 1.5
-      simulate_ahead_time: 1.0
-      rotate_to_goal_heading: True
+      plugin: "nav2_mppi_controller::MPPIController" #麦轮直接使用MPPI
     
-      time_steps: 56    #候选轨迹中的时间步长（点）数
+      time_steps: 36    #候选轨迹中的时间步长（点）数
       model_dt: 0.05    #每个时间步长的时间步长的长度dt（以秒为单位）是预测范围
-      batch_size: 2000  #在给定迭代中从当前最佳控制序列中随机采样的候选轨迹的数量
+      batch_size: 1000  #在给定迭代中从当前最佳控制序列中随机采样的候选轨迹的数量
       vx_std: 0.1       #Vx 的抽样标准差
       vy_std: 0.1       #Vy 的抽样标准差
-      wz_std: 0.25       #Wz（角速度）的抽样标准差
-      vx_max: 0.30       #目标最大前进速度（米/秒）
-      vx_min: -0.18      #目标最大反向速度（米/秒）
+      wz_std: 0.15       #Wz（角速度）的抽样标准差
+      vx_max: 0.25       #目标最大前进速度（米/秒）
+      vx_min: 0.0      #目标最大反向速度（米/秒）
       vy_max: 0.20       #如果使用Omni运动模型，目标最大横向速度（m/s）
-      wz_max: 1.5       #最大旋转速度（弧度/秒）
+      wz_max: 0.8       #最大旋转速度（弧度/秒）
       ax_max: 0.8
       ax_min: -0.8
       ay_max: 0.6
@@ -337,7 +330,6 @@ planner_server: #规划器服务器参数
       use_astar: false
       allow_unknown: true
       use_final_approach_orientation: True
-
 
 planner_server_rclcpp_node:
   ros__parameters:

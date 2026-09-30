@@ -44,8 +44,8 @@ def generate_launch_description():
         condition=IfCondition(V550_mec), 
         actions=[
         generate_robot_node('V550_mec_robot.urdf','V550_mec'),
-        generate_static_transform_publisher_node(['0.05134 ', '0', '0.09452'], ['0', '0', '0'], 'base_footprint', 'laser'),
-        generate_static_transform_publisher_node(['0.11365 ', '0.00017', '0.0762'], ['0', '0', '0'], 'base_footprint', 'camera_link'),    
+ #       generate_static_transform_publisher_node(['0.05134 ', '0', '0.09452'], ['0', '0', '0'], 'base_footprint', 'laser'),
+ #       generate_static_transform_publisher_node(['0.11365 ', '0.00017', '0.0762'], ['0', '0', '0'], 'base_footprint', 'camera_link'),    
     ]) 
 
     V550_4wd_ = GroupAction(

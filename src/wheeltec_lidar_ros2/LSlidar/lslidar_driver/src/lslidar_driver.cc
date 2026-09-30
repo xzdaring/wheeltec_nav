@@ -997,7 +997,7 @@ namespace lslidar_driver
 
 					scan->angle_min = 0;
 					scan->angle_max = 2 * M_PI;
-					scan->angle_increment = 2 * M_PI / (double)(count_num);
+					scan->angle_increment = 2 * M_PI / (double)(scan_num > 0 ? scan_num : 1);
 					scan->range_min = min_range;
 					scan->range_max = max_range;
 					scan->ranges.reserve(scan_num);
@@ -1015,7 +1015,8 @@ namespace lslidar_driver
 
 					for (int i = 0; i < count_num; i++)
 					{
-						int point_idx = round((360 - points[i].degree) * count_num / 360);
+						int point_idx = static_cast<int>(round((360 - points[i].degree) * scan_num / 360));
+						if (point_idx >= scan_num) point_idx = 0;
 						if (points[i].range == 0.0)
 						{
 							scan->ranges[point_idx] = std::numeric_limits<float>::infinity();
@@ -1030,7 +1031,7 @@ namespace lslidar_driver
 						if(truncated_mode_){
 							int len=sizeof(scan_crop_max) / sizeof(scan_crop_max[0]) ;
 							for(int j=0;j<len;++j){
-								if((point_idx>=(scan_crop_min[j]*count_num / 360)) && (point_idx<=(scan_crop_max[j]*count_num / 360))){
+								if((point_idx>=(scan_crop_min[j]*scan_num / 360)) && (point_idx<=(scan_crop_max[j]*scan_num / 360))){
 									scan->ranges[point_idx] = std::numeric_limits<float>::infinity();
 									scan->intensities[point_idx] = 0;
 									}
@@ -1128,6 +1129,10 @@ namespace lslidar_driver
 				{
 					auto scan = sensor_msgs::msg::LaserScan::UniquePtr(new sensor_msgs::msg::LaserScan());
 					int scan_num = ceil((angle_able_max - angle_able_min) / 360 * count_num) + 1;
+if (lidar_name == "M10_P" && angle_able_min <= 0.0 && angle_able_max >= 360.0)
+{
+scan_num = 1667;
+}
 					std::vector<ScanPoint> points;
 					rclcpp::Time start_time;
 					float scan_time;
@@ -1152,7 +1157,7 @@ namespace lslidar_driver
 						scan->angle_min = 2 * M_PI * angle_able_min / 360;
 						scan->angle_max = 2 * M_PI * angle_able_max / 360;
 					}
-					scan->angle_increment = (scan->angle_max - scan->angle_min) / (double)scan_num;
+					scan->angle_increment = (scan->angle_max - scan->angle_min) / (double)(scan_num > 0 ? scan_num : 1);
 
 					scan->range_min = min_range;
 					scan->range_max = max_range;
@@ -1161,16 +1166,17 @@ namespace lslidar_driver
 					scan->intensities.reserve(scan_num);
 					scan->intensities.assign(scan_num, std::numeric_limits<float>::infinity());
 					scan->scan_time = scan_time;
-					scan->time_increment = scan_time / (double)(count_num - 1);
+					scan->time_increment = scan_time / (double)(scan_num > 0 ? scan_num : 1);
 
-					int start_num = floor(angle_able_min * count_num / 360);
-					int end_num = floor(angle_able_max * count_num / 360);
+					int start_num = floor(angle_able_min * scan_num / 360);
+					int end_num = floor(angle_able_max * scan_num / 360);
 
 					for (int i = 0; i < count_num; i++)
 					{
-						int point_idx = round((360 - points[i].degree) * count_num / 360);
-						if (point_idx < (end_num - count_num))
-							point_idx += count_num;
+						int point_idx = static_cast<int>(round((360 - points[i].degree) * scan_num / 360));
+						if (point_idx >= scan_num) point_idx = 0;
+						if (point_idx < (end_num - scan_num))
+						point_idx += scan_num;
 						point_idx = point_idx - start_num;
 						if (point_idx < 0 || point_idx >= scan_num)
 							continue;
@@ -1188,7 +1194,7 @@ namespace lslidar_driver
 						if(truncated_mode_){
 						int len=sizeof(scan_crop_max) / sizeof(scan_crop_max[0]) ;
 						for(int j=0;j<len;++j){
-							if((point_idx>=(scan_crop_min[j]*count_num / 360)) && (point_idx<=(scan_crop_max[j]*count_num / 360))){
+							if((point_idx>=(scan_crop_min[j]*scan_num / 360)) && (point_idx<=(scan_crop_max[j]*scan_num / 360))){
 								scan->ranges[point_idx] = std::numeric_limits<float>::infinity();
 								scan->intensities[point_idx] = 0;
 								}

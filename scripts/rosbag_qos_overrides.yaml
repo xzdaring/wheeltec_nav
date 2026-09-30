@@ -1,0 +1,72 @@
+# rosbag2 recording QoS overrides for latched Nav2/SLAM topics.
+/tf_static:
+  history: keep_last
+  depth: 100
+  reliability: reliable
+  durability: transient_local
+
+/robot_description:
+  history: keep_last
+  depth: 1
+  reliability: reliable
+  durability: transient_local
+
+/map:
+  history: keep_last
+  depth: 1
+  reliability: reliable
+  durability: transient_local
+
+/map_metadata:
+  history: keep_last
+  depth: 1
+  reliability: reliable
+  durability: transient_local
+
+/local_costmap/costmap:
+  history: keep_last
+  depth: 1
+  reliability: reliable
+  durability: transient_local
+
+/local_costmap/costmap_raw:
+  history: keep_last
+  depth: 1
+  reliability: reliable
+  durability: transient_local
+
+/local_costmap/footprint:
+  history: keep_last
+  depth: 1
+  reliability: reliable
+  durability: transient_local
+
+/local_costmap/published_footprint:
+  history: keep_last
+  depth: 1
+  reliability: reliable
+  durability: transient_local
+
+/global_costmap/costmap:
+  history: keep_last
+  depth: 1
+  reliability: reliable
+  durability: transient_local
+
+/global_costmap/costmap_raw:
+  history: keep_last
+  depth: 1
+  reliability: reliable
+  durability: transient_local
+
+/global_costmap/footprint:
+  history: keep_last
+  depth: 1
+  reliability: reliable
+  durability: transient_local
+
+/global_costmap/published_footprint:
+  history: keep_last
+  depth: 1
+  reliability: reliable
+  durability: transient_local

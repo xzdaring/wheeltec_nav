@@ -63,14 +63,14 @@ void turn_on_robot::Cmd_Vel_Callback(const geometry_msgs::msg::Twist::SharedPtr 
   //The target velocity of the X-axis of the robot
   //机器人x轴的目标线速度
   transition=0;
-  transition = twist_aux->linear.x*1000; //将浮点数放大一千倍，简化传输
+  transition = -twist_aux->linear.x*1000; //将浮点数放大一千倍，简化传输
   Send_Data.tx[4] = transition;     //取数据的低8位
   Send_Data.tx[3] = transition>>8;  //取数据的高8位
 
   //The target velocity of the Y-axis of the robot
   //机器人y轴的目标线速度
   transition=0;
-  transition = twist_aux->linear.y*1000;
+  transition = -twist_aux->linear.y*1000;
   Send_Data.tx[6] = transition;
   Send_Data.tx[5] = transition>>8;
 
@@ -447,8 +447,8 @@ bool turn_on_robot::Get_Sensor_Data()
       if (Receive_Data.rx[22] == Check_Sum(22,READ_DATA_CHECK)) //BCC check passes or two packets are interlaced //BCC校验通过或者两组数据包交错
       {
         Receive_Data.Flag_Stop=Receive_Data.rx[1]; //set aside //预留位
-        Robot_Vel.X = Odom_Trans(Receive_Data.rx[2],Receive_Data.rx[3]); //Get the speed of the moving chassis in the X direction //获取运动底盘X方向速度
-        Robot_Vel.Y = Odom_Trans(Receive_Data.rx[4],Receive_Data.rx[5]); //Get the speed of the moving chassis in the Y direction, The Y speed is only valid in the omnidirectional mobile robot chassis
+        Robot_Vel.X = -Odom_Trans(Receive_Data.rx[2],Receive_Data.rx[3]); //Get the speed of the moving chassis in the X direction //获取运动底盘X方向速度
+        Robot_Vel.Y = -Odom_Trans(Receive_Data.rx[4],Receive_Data.rx[5]); //Get the speed of the moving chassis in the Y direction, The Y speed is only valid in the omnidirectional mobile robot chassis
                                                                          //获取运动底盘Y方向速度，Y速度仅在全向移动机器人底盘有效
         Robot_Vel.Z = Odom_Trans(Receive_Data.rx[6],Receive_Data.rx[7]); //Get the speed of the moving chassis in the Z direction //获取运动底盘Z方向速度   
         
@@ -572,9 +572,9 @@ bool turn_on_robot::Get_Sensor_Data_New()
         */
 
         Receive_Data.Flag_Stop=Receive_Data.rx[1]; //set aside //预留位
-        Robot_Vel.X = Odom_Trans(Receive_Data.rx[2],Receive_Data.rx[3]); //Get the speed of the moving chassis in the X direction //获取运动底盘X方向速度
+        Robot_Vel.X = -Odom_Trans(Receive_Data.rx[2],Receive_Data.rx[3]); //Get the speed of the moving chassis in the X direction //获取运动底盘X方向速度
           
-        Robot_Vel.Y = Odom_Trans(Receive_Data.rx[4],Receive_Data.rx[5]); //Get the speed of the moving chassis in the Y direction, The Y speed is only valid in the omnidirectional mobile robot chassis
+        Robot_Vel.Y = -Odom_Trans(Receive_Data.rx[4],Receive_Data.rx[5]); //Get the speed of the moving chassis in the Y direction, The Y speed is only valid in the omnidirectional mobile robot chassis
                                                                           //获取运动底盘Y方向速度，Y速度仅在全向移动机器人底盘有效
         Robot_Vel.Z = Odom_Trans(Receive_Data.rx[6],Receive_Data.rx[7]); //Get the speed of the moving chassis in the Z direction //获取运动底盘Z方向速度   
           

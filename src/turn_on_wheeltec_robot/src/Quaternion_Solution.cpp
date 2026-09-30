@@ -25,7 +25,7 @@ Function: 四元数解算
 ***************************************/
 volatile float twoKp = 1.0f;     // 2 * proportional gain (Kp)
 volatile float twoKi = 0.0f;     // 2 * integral gain (Ki)
-volatile float q0 = 1.0f, q1 = 0.0f, q2 = 0.0f, q3 = 0.0f;          // quaternion of sensor frame relative to auxiliary frame
+volatile float q0 = 0.0f, q1 = 0.0f, q2 = 0.0f, q3 = 1.0f;          // quaternion of sensor frame relative to auxiliary frame
 volatile float integralFBx = 0.0f,  integralFBy = 0.0f, integralFBz = 0.0f; // integral error terms scaled by Ki
 void Quaternion_Solution(float gx, float gy, float gz, float ax, float ay, float az)
 {

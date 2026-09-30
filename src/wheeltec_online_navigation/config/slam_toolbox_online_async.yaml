@@ -1,0 +1,130 @@
+# slam_toolbox 在线异步建图参数。
+# 该配置用于“不预先建图”的实时 SLAM：启动后持续接收 /scan，
+# 输出 map 地图以及 map -> odom_combined 的定位修正。
+slam_toolbox:
+  ros__parameters:
+    # ==================== 位姿图优化器 Solver ====================
+    # 使用 Ceres 求解位姿图优化问题。
+    solver_plugin: solver_plugins::CeresSolver
+    # 使用稀疏正规方程求解器，适合 slam_toolbox 的稀疏图结构。
+    ceres_linear_solver: SPARSE_NORMAL_CHOLESKY
+    # 使用 Schur 补雅可比预条件器，提高大规模图优化速度。
+    ceres_preconditioner: SCHUR_JACOBI
+    # 使用 Levenberg-Marquardt 信赖域策略平衡收敛速度与稳定性。
+    ceres_trust_strategy: LEVENBERG_MARQUARDT
+    # 使用传统 Dogleg 算法配置，未启用时仍由上述策略控制求解。
+    ceres_dogleg_type: TRADITIONAL_DOGLEG
+    # 默认不使用额外损失函数，保持标准最小二乘求解。
+    ceres_loss_function: None
+
+    # ==================== 坐标系与话题 ====================
+    # 连续里程计坐标系，由 robot_localization EKF 发布。
+    odom_frame: odom_combined
+    # 在线 SLAM 生成的全局地图坐标系。
+    map_frame: map
+    # 机器人底盘基准坐标系，所有里程计和雷达数据最终都会关联到该坐标系。
+    base_frame: base_footprint
+    # 输入激光雷达扫描话题。
+    scan_topic: /scan
+    # 允许使用地图保存服务，方便后续保存当前在线地图。
+    use_map_saver: true
+    # 建图模式：同时估计机器人位姿并增量生成地图。
+    mode: mapping
+
+    # ==================== 运行时参数 ====================
+    # 关闭调试日志，减少 Jetson 上的日志和 CPU 开销。
+    debug_logging: false
+    # 每 1 帧处理一次扫描；设为 1 表示不降采样传感器数据。
+    throttle_scans: 1
+    # 每 0.02 秒发布一次 map->odom 变换，保证导航 TF 足够连续。
+    transform_publish_period: 0.02
+    # 地图发布间隔，单位秒；1.0 秒可降低计算负载并避免静止时频繁更新。
+    map_update_interval: 1.0
+    # 栅格地图分辨率，单位米/像素；0.05 表示每格 5 cm。
+    resolution: 0.05
+    # 雷达有效最小距离，过近的无效或自反射点不会参与建图。
+    min_laser_range: 0.20
+    # 雷达有效最大距离，超过该距离的点不参与栅格化。
+    max_laser_range: 20.0
+    # 两帧参与扫描匹配的最小时间间隔，单位秒。
+    minimum_time_interval: 0.25
+    # 扫描消息队列长度，网络或 CPU 短时繁忙时允许缓存。
+    scan_queue_size: 20
+    # 等待 TF 变换的最长时间，单位秒。
+    transform_timeout: 1.0
+    # TF 缓存时长，单位秒；用于保存历史变换供扫描匹配查询。
+    tf_buffer_duration: 30.0
+    # Ceres 优化线程使用更大的栈，避免复杂地图序列化时栈溢出。
+    stack_size_to_use: 40000000
+    # 启用 RViz 交互式标记，可在地图上进行局部修正操作。
+    enable_interactive_mode: true
+
+    # ==================== 扫描匹配参数 ====================
+    # 开启扫描匹配，用激光环境特征修正轮式里程计漂移。
+    use_scan_matching: true
+    # 使用扫描点云质心增强位姿估计，提高匹配稳定性。
+    use_scan_barycenter: true
+    # 触发新扫描匹配所需的最小平移距离，单位米；避免静止时反复优化。
+    minimum_travel_distance: 0.10
+    # 触发新扫描匹配所需的最小旋转角度，单位弧度；避免原地微动造成假修正。
+    minimum_travel_heading: 0.10
+    # 保留最近扫描帧的数量，用于局部扫描匹配。
+    scan_buffer_size: 10
+    # 扫描缓冲区中参与匹配的最大距离，单位米。
+    scan_buffer_maximum_scan_distance: 10.0
+    # 精细匹配的最低响应阈值；低于该值认为匹配不可靠。
+    link_match_minimum_response_fine: 0.20
+    # 相邻节点允许建立约束的最大距离，单位米。
+    link_scan_maximum_distance: 1.50
+    # 回环检测搜索最大半径，单位米。
+    loop_search_maximum_distance: 1.5
+    # 关闭自动回环，避免在线导航中因误回环造成地图和局部定位跳变。
+    do_loop_closing: false
+    # 建立回环所需的最小连续节点数；关闭回环时该值仅在启用回环后生效。
+    loop_match_minimum_chain_size: 15
+    # 粗匹配允许的最大方差，数值越大越容易接受候选回环。
+    loop_match_maximum_variance_coarse: 3.0
+    # 粗匹配最低响应阈值。
+    loop_match_minimum_response_coarse: 0.35
+    # 精细匹配最低响应阈值。
+    loop_match_minimum_response_fine: 0.45
+
+    # ==================== 相关性搜索参数 ====================
+    # 相关性搜索空间边长，单位米；决定局部位姿搜索范围。
+    correlation_search_space_dimension: 0.5
+    # 相关性搜索空间分辨率，单位米；越小越精细但计算量越大。
+    correlation_search_space_resolution: 0.01
+    # 相关性搜索高斯模糊标准差，用于平滑匹配响应。
+    correlation_search_space_smear_deviation: 0.10
+
+    # ==================== 回环搜索空间参数 ====================
+    # 回环搜索空间边长，单位米。
+    loop_search_space_dimension: 8.0
+    # 回环搜索空间分辨率，单位米。
+    loop_search_space_resolution: 0.05
+    # 回环搜索响应平滑程度。
+    loop_search_space_smear_deviation: 0.03
+
+    # ==================== 扫描匹配惩罚参数 ====================
+    # 距离误差在位姿优化中的惩罚权重。
+    distance_variance_penalty: 0.5
+    # 角度误差在位姿优化中的惩罚权重。
+    angle_variance_penalty: 1.0
+    # 精细搜索时的角度偏移基准，单位弧度。
+    fine_search_angle_offset: 0.00349
+    # 粗搜索时的角度偏移基准，单位弧度。
+    coarse_search_angle_offset: 0.349
+    # 粗角度搜索的分辨率，单位弧度。
+    coarse_angle_resolution: 0.0349
+    # 允许的最小角度匹配惩罚，限制最优角度搜索范围。
+    minimum_angle_penalty: 0.9
+    # 允许的最小距离匹配惩罚，限制最优平移搜索范围。
+    minimum_distance_penalty: 0.5
+    # 使用匹配响应扩展策略，提高弱特征环境下的匹配鲁棒性。
+    use_response_expansion: true
+
+    # ==================== 地图栅格化参数 ====================
+    # 一个栅格至少被多少帧扫描命中后才认为是可靠障碍物。
+    min_pass_through: 2
+    # 占用概率阈值，超过该值才将栅格判定为占用。
+    occupancy_threshold: 0.10

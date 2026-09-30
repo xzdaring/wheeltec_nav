@@ -78,7 +78,7 @@ ekf_filter_node:
         imu0_nodelay: false      # 网络传输延迟控制
         imu0_differential: false  # 差分模式：如果为true，这个传感器的位姿数据不会直接拿来融合，而是会转换为速度，
                                  # 通过两次测量的差来计算，滤波器就不会在融合绝对位置，而是融合变化量——速度
-        imu0_relative: true     
+        imu0_relative: false     
         imu0_queue_size: 5       # IMU消息缓存长度，高频IMU可适当调大
 
         # 异常数据过滤阈值（马氏距离）：这些是拒绝异常值的阈值，用来避免错误数据“污染滤波”。
